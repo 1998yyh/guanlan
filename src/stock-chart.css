@@ -1,0 +1,79 @@
+.stock-chart {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  background: #111923;
+  color: #e6edf5;
+  font-family: inherit;
+  overscroll-behavior: contain;
+}
+.stock-chart * { box-sizing: border-box; }
+.stock-chart button {
+  min-height: 40px;
+  border: 1px solid #344152;
+  border-radius: 9px;
+  background: #1a2532;
+  color: #c6d0df;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 8px 12px;
+}
+.stock-chart button:disabled { opacity: .4; cursor: default; }
+.stock-chart button:focus-visible,
+.stock-chart input:focus-visible { outline: 2px solid #e8c47a; outline-offset: 3px; }
+.stock-chart button[aria-pressed="true"] {
+  color: #f2d394;
+  background: #3a3326;
+  border-color: #a48a54;
+}
+.stock-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: max(18px, env(safe-area-inset-top)) 20px 15px;
+  border-bottom: 1px solid #293443;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.stock-chart-header h2 { margin: 0 0 4px; font-size: 19px; }
+.stock-chart-header small { color: #8e9cae; font-size: 12px; font-weight: 400; }
+.stock-chart .stock-chart-close { width: 44px; height: 44px; font-size: 25px; padding: 0; }
+.stock-chart-muted { color: #92a2b6; font-size: 12px; }
+.stock-chart-body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  flex: 1;
+  padding: 18px 16px max(28px, env(safe-area-inset-bottom));
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+}
+.stock-chart-quote { display: flex; align-items: baseline; gap: 12px; margin-bottom: 18px; }
+.stock-chart-quote strong { font-size: 30px; font-variant-numeric: tabular-nums; }
+.stock-chart-up { color: #fa777c; }
+.stock-chart-down { color: #45c5aa; }
+.stock-chart-controls { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+.stock-chart-controls button { flex: 1; }
+.stock-chart-source { font-size: 11px; color: #9baabd; line-height: 1.8; overflow-wrap: anywhere; }
+.stock-chart-notice { font-size: 12px; padding: 10px; background: #332e23; color: #e8c47a; border-radius: 8px; }
+.stock-chart-state { padding: 42px 14px; text-align: center; color: #c2ccda; }
+.stock-chart-details { padding: 12px; background: #192432; border-radius: 10px; margin-top: 12px; }
+.stock-chart-details strong { font-size: 12px; font-weight: 500; }
+.stock-chart-details em { font-style: normal; color: #e8c47a; }
+.stock-chart-details dl { display: flex; justify-content: space-between; gap: 7px; margin: 10px 0 0; }
+.stock-chart-details dt { color: #8f9db1; font-size: 11px; }
+.stock-chart-details dd { margin: 4px 0 0; font-size: 12px; font-variant-numeric: tabular-nums; }
+.stock-chart-svg { width: 100%; display: block; touch-action: pan-y; user-select: none; }
+.stock-chart-svg text { fill: #9faec1; font-size: 9px; font-variant-numeric: tabular-nums; }
+.stock-chart-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 11px; margin: 12px 0 4px; }
+.stock-chart-navigation { display: flex; gap: 6px; margin-top: 18px; }
+.stock-chart-navigation button { flex: 1; padding: 8px 4px; font-size: 11px; }
+.stock-chart-slider { display: block; font-size: 12px; color: #a6b4c6; margin: 18px 0; }
+.stock-chart-slider input { display: block; width: 100%; min-height: 36px; margin-top: 6px; accent-color: #d6b777; }
+@media (min-width: 700px) {
+  .stock-chart-header { padding-inline: max(24px, calc((100vw - 828px) / 2)); }
+  .stock-chart-svg { max-height: 640px; }
+}
