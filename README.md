@@ -1,6 +1,6 @@
 # 观澜 H5
 
-个人 A 股看盘与研究应用。前端使用 React + TypeScript + Vite，适配手机浏览器；后端复用旁边的 [tuanzi-server-base](../tuanzi-server-base)，工作分支 `feat/guanlan-stock-app`。2026-09-12 根据用户决定改用 H5，安卓工程及本次安装的专用工具链已删除。
+个人 A 股看盘与研究应用。前端使用 React + TypeScript + Vite，适配 PC 和手机浏览器；后端复用旁边的 [tuanzi-server-base](../tuanzi-server-base)，工作分支 `feat/guanlan-stock-app`。2026-09-12 根据用户决定改用 H5，安卓工程及本次安装的专用工具链已删除。
 
 ## 启动
 
@@ -20,8 +20,8 @@ npm run dev
 ## 功能
 
 - 指数、股票搜索、观察行情；日/周 K 线、分时、成交量与 MA/MACD/KDJ/RSI/BOLL。
-- 固定指标模板、可保存和编辑的自定义组合策略、观察池/全市场异步筛选。
-- 筛选候选勾选后进入 AI 比较；大盘/个股复盘与聊天合并，支持新会话、续聊、历史分页和删除。
+- 新浪 B 信号选股：沪深主板非 ST 扫描、指定代码筛选、日期历史、强制刷新、勾选入池和 S 信号跟踪。原条件选股入口暂时停用。
+- 大盘/个股复盘与聊天合并，支持新会话、续聊、历史分页和删除。
 - 观察理由、价格/涨跌幅/指标预警、触发记录与已读状态。
 
 行情、指标、筛选事实和会话均连接 NestJS。外部行情失败明确提示。预警检测在在线后端运行，H5 提供前台查看与历史记录；关闭网页后的推送尚未接入。财报/公告等结构化证据、自定义公式语言、交易复盘、下单与离线同步不在当前版本。
@@ -60,3 +60,5 @@ npm run build:online
 
 线上服务还需部署 `feat/guanlan-stock-app` 的业务模块，并按后端部署说明执行新增表的 SQL；旧版仅有登录注册的线上服务还无法提供观澜接口。保持 `synchronize=false`。本机 `.env.online.local` 已沿用 `personal-homepage/.env.online` 的 `/api` 与 `VITE_PROXY_TARGET` 设置。线上代理目标优先于旧的 `GUANLAN_API_TARGET` 开发覆盖值。未修改线上数据库或执行线上迁移。
 # guanlan
+
+新浪选股由 `personal-homepage` 迁入，继续使用同一后端和账号即可读取旧历史与信号观察池。详见 [迁移说明](docs/sina-signals-migration.md)。

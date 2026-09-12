@@ -6,13 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **角色**: 前端工程师（React/TypeScript 方向），同时要知道隔壁 NestJS 后端的接口边界
 - **技术栈**: React 19 + TypeScript ~5.8（strict）+ Vite 6，图标 lucide-react；测试 Vitest 3 + Playwright
-- **项目描述**: 「观澜」个人 A 股看盘与研究 H5——手机浏览器优先，行情/选股/观察预警/AI 复盘四入口，所有数据来自外部 NestJS 服务
+- **项目描述**: 「观澜」个人 A 股看盘与研究 H5——PC 与移动端浏览器共同支持，行情/选股/观察预警/AI 复盘四入口，所有数据来自外部 NestJS 服务
 
 ## 项目结构
 
 本仓库**只有前端**。后端在独立仓库 `../tuanzi-server-base`（NestJS + TypeORM + MySQL，工作分支 `feat/guanlan-stock-app`），不要在这里改它。
 
 - `src/H5App.tsx` — **整个应用主体**（~1800 行，单文件，无路由，内部按四个 Tab 组织）。改 UI 基本就是改它
+- `src/signals/` — 当前选股入口：新浪 B 信号扫描与 S 信号观察池，接口类型、扫描与池状态独立组织。原 `Screening` 条件选股实现暂时保留但不挂载
 - `src/api.ts` — `ApiClient`：JWT 登录/单次刷新/会话 epoch 取消/SSE 流式解析。**所有后端请求必须走它**，见「核心架构」
 - `src/StockChart.tsx` — K 线/分时/指标图表组件（canvas 手绘，消费 `stock-market/bars`）
 - `src/domain.ts` — 早期试写的纯函数（筛选/预警/记账），**仅被 `tests/domain.test.ts` 引用**，UI 不用它
@@ -69,8 +70,8 @@ logout() → epoch++ + abort 全部 controller + 清 sessionStorage
 
 **为什么有 epoch**：防止「登出后迟到的登录响应复活会话」这类竞态（`tests/api.test.ts` 有对应用例）。在 ApiClient 里加新方法时，必须沿用 `run()`/`assertSession()` 模式，别绕过。
 
-**H5App.tsx 消费的后端资源**（全部经 ApiClient，baseURL 前缀 `/api`）：
-`stock-market/{indices,quotes,bars,search}`、`stock-screening/runs`、`stock-strategies(+templates)`、`stock-research/{watchlist,alerts,alert-events,conversations(+/messages)}`。接口字段定义看 H5App.tsx 顶部的 type 声明；后端权威设计在 `../tuanzi-server-base/docs/plans/`。
+**前端消费的后端资源**（全部经 ApiClient，baseURL 前缀 `/api`）：
+`stock-market/{indices,quotes,bars,search}`、`stock-signals(+dates,+scans)`、`stock-watchlist(+check)`、`stock-research/{watchlist,alerts,alert-events,conversations(+/messages)}`。接口字段定义看 H5App.tsx 顶部及 src/signals/ 的类型声明；后端权威设计在 `../tuanzi-server-base/docs/plans/`。
 
 **铁律：行情/AI 失败就明确报错，禁止静默降级到演示数据**（`tests/e2e/app.spec.ts` 第二条用例专门守这个）。
 
@@ -86,13 +87,21 @@ logout() → epoch++ + abort 全部 controller + 清 sessionStorage
 - **数字精度**: 涉及金额用 `Math.round(x*100)/100`（见 domain.ts），别引入浮点直接比较
 - **导入**: 禁止 `allowImportingTsExtensions` 之外的奇技淫巧；`import.meta.env.VITE_API_URL` 是唯一前端环境变量入口
 
+## PC 与移动端兼容（后续开发强制要求）
+
+- 所有新增、修改功能必须同时支持 PC 与移动端，使用同一套业务状态和 API；两端都能完成完整操作流程。
+- 响应式布局：小于 1024px 使用底部导航，1024px 起使用顶部导航及宽屏布局；窄屏表单单列，宽屏可多列，窗口缩放或横竖屏切换时保留当前状态。
+- 页面、表单、弹层、错误提示和长文本都必须适配 320px 起的视口，无页面级横向滚动、内容重叠或操作被裁切；固定区域预留安全区和内容空间。
+- 交互同时支持鼠标、键盘与触摸，主要触控目标至少 44px，焦点清晰；功能不能仅依赖 hover。移动端输入字号至少 16px，图表保持显示比例与指针坐标一致。
+- 每次涉及 UI 的改动，验证 375/393px 手机和 1440px PC 的相关完整流程，并检查 320、768、1024px 边界尺寸；覆盖登录、导航、表单、图表及相关加载/空/错误状态。新增交互按需补充双端回归用例，执行本文件测试要求；交付时明确实际验证范围和未验证项。
+
 ## 三层边界模型
 
 ### ✅ 必须执行
 - 改完代码跑 `npm test && npm run build`；涉及浏览器行为的再跑 `npm run test:e2e`
 - 新增 API 调用一律走 `ApiClient`（自动获得鉴权/刷新/取消/epoch 校验）
 - 后端接口字段变更 → 同步改 H5App.tsx 顶部 type 声明 + 相关测试 mock
-- 新增错误路径必须有用户可读的中文提示，且失败不丢用户已填数据（如策略草稿，见 e2e 用例）
+- 新增错误路径必须有用户可读的中文提示，且失败不丢用户已填数据（如新浪选股入池失败保留勾选，见 e2e 用例）
 
 ### ⚠️ 需先询问
 - 改 `api.ts` 的会话/刷新/SSE 语义（牵一发动全身，有专门测试守着）
@@ -114,11 +123,11 @@ logout() → epoch++ + abort 全部 controller + 清 sessionStorage
 | 层 | 框架 | 范围 | 运行 |
 |---|---|---|---|
 | 单元 | Vitest | `tests/*.test.ts`：ApiClient 会话/SSE（重点）、domain 纯函数、legacy server | `npm test` |
-| E2E（mock） | Playwright | `tests/e2e/app.spec.ts`：登录、策略 409 保草稿、退出清会话、393px 不横向滚动 | `npm run test:e2e` |
-| E2E（live） | Playwright | `tests/e2e/live.spec.ts`：真实 Nest/MySQL 全链路，需 `GUANLAN_LIVE_LOGIN_FILE`，默认 skip | 手动 |
+| E2E（mock） | Playwright | `tests/e2e/app.spec.ts`、`signals.spec.ts`、`responsive.spec.ts`：登录退出、新浪扫描/入池/S 信号、双端布局 | `npm run test:e2e` |
+| E2E（live） | Playwright | `tests/e2e/live.spec.ts`：观察提醒需 `GUANLAN_LIVE_LOGIN_FILE`，默认 skip；旧条件选股链路暂停 | 手动 |
 
 - E2E 一律用 `page.route("**/api/**")` mock，不依赖真实后端；baseURL 固定 `127.0.0.1:5175`
-- 手机视口 393×851 是验收基线，UI 改动后注意不能出现横向滚动（有现成断言模式可抄）
+- 双端视口与 UI 验收规则见「PC 与移动端兼容」；`tests/e2e/responsive.spec.ts` 覆盖多尺寸导航、表单和行情详情。
 - 改 ApiClient 前先读 `tests/api.test.ts` 的既有用例（登录刷新竞态、SSE 分帧、message_end 强制）
 
 ## 文档体系与同步
@@ -132,3 +141,5 @@ logout() → epoch++ + abort 全部 controller + 清 sessionStorage
 **版本**: v1.0
 **最后更新**: 2026-09-12
 **维护者**: 观澜项目（个人项目）
+
+新浪选股迁移边界与端点见 `docs/sina-signals-migration.md`。后续选股开发以此为当前实现，暂不恢复条件选股。

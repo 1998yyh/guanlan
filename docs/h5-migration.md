@@ -36,3 +36,7 @@ GUANLAN_LIVE_LOGIN_FILE=/path/to/local-test-login.json npm run test:e2e
 ```
 
 测试登录文件字段为 username/password/baseURL，仅接受本机测试账号。截图由 Playwright 写入 test-results/，不作为正式行情或投资结论。
+
+## 新浪选股迁入（2026-09-12）
+
+选股入口改为新浪 UPBS B 信号扫描及信号观察池，原条件选股暂停。PC 使用顶部导航，移动端使用底部导航，两端支持完整选股流程。原条件选股的历史验证记录仅代表当时版本，现行范围与验证见 [新浪迁移说明](sina-signals-migration.md)。
