@@ -1,0 +1,17 @@
+node_modules/
+dist/
+tsconfig.tsbuildinfo
+.env
+.venv/
+server/data/
+test-results/
+playwright-report/
+android/.gradle/
+android/local.properties
+android/**/build/
+
+.toolchain/
+
+.env.*
+!.env.example
+!.env.*.example
