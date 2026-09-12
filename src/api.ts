@@ -6,6 +6,12 @@ const emptyStorage: StorageLike = {
   setItem: () => {},
   removeItem: () => {},
 };
+export class ApiError extends Error {
+  constructor(message: string, public readonly status: number) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
 export class ApiClient {
   private access = "";
   private refreshToken = "";
@@ -170,7 +176,7 @@ export class ApiClient {
             : String(data.message);
       } catch {}
       if (response.status === 401 && !path.startsWith("auth/")) this.logout();
-      throw new Error(message);
+      throw new ApiError(message, response.status);
     }
     return response;
   }

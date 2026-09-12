@@ -15,6 +15,12 @@ const storage = () => {
 const json = (x: unknown, status = 200) =>
   new Response(JSON.stringify(x), { status });
 describe("H5 API session", () => {
+  it("保留 HTTP 状态码，让未扫描与服务故障可区分", async () => {
+    const client = new ApiClient(async () => json({ message: "尚未扫描" }, 404));
+    await expect(client.request("stock-signals?date=2026-09-11")).rejects.toMatchObject({
+      status: 404, message: "尚未扫描",
+    });
+  });
   it("logs in, refreshes once and preserves JSON request bodies", async () => {
     const fetcher = vi
       .fn()

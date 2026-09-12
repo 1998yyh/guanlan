@@ -8,6 +8,7 @@ import {
 } from "react";
 import { api } from "./api";
 import { StockChart } from "./StockChart";
+import { SignalScreening } from "./signals/SignalScreening";
 import "./h5.css";
 
 type Page<T> = { items: T[]; total?: number; totalPages?: number };
@@ -402,32 +403,6 @@ function Workspace({ onLogout }: { onLogout: () => void }) {
           ⚙
         </button>
       </header>
-      {settings && (
-        <section className="panel settings">
-          <strong>服务连接</strong>
-          <p className="muted">{api.baseUrl}</p>
-          <button onClick={onLogout}>退出登录 / 切换服务</button>
-        </section>
-      )}
-      <main className="main-content">
-        {tab === "market" && <Market onOpen={setQuote} />}
-        {tab === "screen" && (
-          <Screening
-            onOpen={setQuote}
-            onResearch={(context) => {
-              setScreen(context);
-              setTab("research");
-            }}
-          />
-        )}
-        {tab === "watch" && <Observation onOpen={setQuote} />}
-        {tab === "research" && (
-          <Research
-            initialContext={screen}
-            clearContext={() => setScreen(undefined)}
-          />
-        )}
-      </main>
       <nav className="bottom-nav" aria-label="主导航">
         {tabs.map(([key, icon, title]) => (
           <button
@@ -441,6 +416,26 @@ function Workspace({ onLogout }: { onLogout: () => void }) {
           </button>
         ))}
       </nav>
+      {settings && (
+        <section className="panel settings">
+          <strong>服务连接</strong>
+          <p className="muted">{api.baseUrl}</p>
+          <button onClick={onLogout}>退出登录 / 切换服务</button>
+        </section>
+      )}
+      <main className="main-content">
+        {tab === "market" && <Market onOpen={setQuote} />}
+        {tab === "screen" && (
+          <SignalScreening onOpen={setQuote} />
+        )}
+        {tab === "watch" && <Observation onOpen={setQuote} />}
+        {tab === "research" && (
+          <Research
+            initialContext={screen}
+            clearContext={() => setScreen(undefined)}
+          />
+        )}
+      </main>
       {quote && (
         <StockChart quote={quote} onClose={() => setQuote(undefined)} />
       )}
