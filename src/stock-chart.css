@@ -11,7 +11,7 @@
 }
 .stock-chart * { box-sizing: border-box; }
 .stock-chart button {
-  min-height: 40px;
+  min-height: 44px;
   border: 1px solid #344152;
   border-radius: 9px;
   background: #1a2532;
@@ -75,5 +75,23 @@
 .stock-chart-slider input { display: block; width: 100%; min-height: 36px; margin-top: 6px; accent-color: #d6b777; }
 @media (min-width: 700px) {
   .stock-chart-header { padding-inline: max(24px, calc((100vw - 828px) / 2)); }
-  .stock-chart-svg { max-height: 640px; }
+  .stock-chart-svg { max-width: 549px; height: auto; margin-inline: auto; }
+}
+
+.stock-chart-header > div { min-width: 0; overflow-wrap: anywhere; }
+.stock-chart .stock-chart-close { flex-shrink: 0; }
+.stock-chart-body { min-height: 0; }
+.stock-chart-details dl { flex-wrap: wrap; }
+.stock-chart-header, .stock-chart-body {
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+@media (min-width: 1024px) {
+  .stock-chart {
+    inset: 24px max(24px, calc((100vw - 1000px) / 2));
+    border: 1px solid #344152;
+    border-radius: 18px;
+    box-shadow: 0 0 0 100vmax #090d13d9;
+  }
+  .stock-chart-header { padding-inline: 28px; }
 }

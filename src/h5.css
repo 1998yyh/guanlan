@@ -36,7 +36,7 @@ button {
   background: #1a2532;
   border-radius: 10px;
   padding: 10px 14px;
-  min-height: 42px;
+  min-height: 44px;
   transition: background 0.15s;
 }
 button:hover:not(:disabled) {
@@ -153,7 +153,7 @@ section {
   margin-left: 12px;
 }
 .main-content {
-  padding: 32px 30px 120px;
+  padding: 32px 30px calc(120px + env(safe-area-inset-bottom));
 }
 .page-heading {
   display: flex;
@@ -602,7 +602,7 @@ pre {
     display: none;
   }
   .main-content {
-    padding: 25px 18px 110px;
+    padding: 25px 18px calc(110px + env(safe-area-inset-bottom));
   }
   .page-heading {
     align-items: flex-start;
@@ -663,5 +663,85 @@ pre {
   * {
     scroll-behavior: auto !important;
     transition: none !important;
+  }
+}
+
+/* 共享内容在窄屏收缩、换行，避免用隐藏溢出来遮住操作。 */
+.panel, .strategy-card, .index-card, .section-heading > *, .history-row {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.section-heading {
+  flex-wrap: wrap;
+}
+.search-bar button, .app-header > button {
+  flex-shrink: 0;
+}
+.app-header, .main-content, .bottom-nav {
+  padding-left: max(18px, env(safe-area-inset-left));
+  padding-right: max(18px, env(safe-area-inset-right));
+}
+.app-header {
+  height: auto;
+  min-height: 66px;
+  padding-top: max(10px, env(safe-area-inset-top));
+  padding-bottom: 10px;
+}
+@media (max-width: 600px) {
+  input, select, textarea {
+    font-size: 16px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .index-card > strong {
+    font-size: clamp(16px, 4.8vw, 20px);
+  }
+}
+@media (min-width: 1024px) {
+  .app-shell {
+    max-width: 1280px;
+  }
+  .app-header {
+    min-height: 80px;
+    padding-inline: 36px;
+  }
+  .bottom-nav {
+    position: sticky;
+    top: 0;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    max-width: none;
+    padding: 10px 36px;
+    border-top: 0;
+    border-bottom: 1px solid var(--line);
+    gap: 12px;
+  }
+  .bottom-nav button {
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    font-size: 14px;
+    min-height: 48px;
+  }
+  .bottom-nav .active {
+    background: #20382e;
+  }
+  .bottom-nav .active > span {
+    width: auto;
+    background: transparent;
+  }
+  .main-content {
+    padding: 32px 36px 48px;
+  }
+  .settings {
+    margin-inline: 36px;
+  }
+  .strategy-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .message {
+    max-width: 80%;
   }
 }
